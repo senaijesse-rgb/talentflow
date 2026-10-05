@@ -1,0 +1,11 @@
+.git
+.env
+credentials/*.json
+storage/*.json
+storage/*.log
+storage/*.txt
+scripts
+composer.json
+composer.lock
+composer.phar
+composer-setup.php

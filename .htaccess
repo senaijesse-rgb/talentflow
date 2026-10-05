@@ -1,0 +1,12 @@
+Options -Indexes
+DirectoryIndex index.php
+
+# Bloqueia arquivos ocultos (.env, .git), diretórios internos e arquivos de configuração
+RedirectMatch 404 /\.(?!well-known)
+RedirectMatch 404 /(includes|services|storage|data|vendor|credentials)(/|$)
+<FilesMatch "\.(json|lock|md|example|log)$">
+    Require all denied
+</FilesMatch>
+<Files "router.php">
+    Require all denied
+</Files>

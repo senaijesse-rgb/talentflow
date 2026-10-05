@@ -1,0 +1,12 @@
+/credentials/*.json
+/storage/*.json
+/storage/*.log
+/storage/*.txt
+/storage/cacert.pem
+.env
+composer.phar
+composer-setup.php
+/scripts/montar_fluxo_talentflow.mjs
+/scripts/gerar_apps_script_planilha.php
+/scripts/criar_talentflow_pdi.min.js
+/scripts/criar_talentflow_pdi.gs

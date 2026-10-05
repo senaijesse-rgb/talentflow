@@ -1,0 +1,28 @@
+{
+    "name": "pdi-connect/app",
+    "description": "PDI Connect — Google Sheets como base operacional via conta de serviço.",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "google/apiclient": "^2.18"
+    },
+    "scripts": {
+        "pre-autoload-dump": "Google\\Task\\Composer::cleanup"
+    },
+    "extra": {
+        "google/apiclient-services": [
+            "Sheets"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "allow-plugins": {
+            "google/apiclient-services": true
+        }
+    }
+}
