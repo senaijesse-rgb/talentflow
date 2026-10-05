@@ -129,6 +129,7 @@ function itensMenu(string $perfil): array
 {
     $itens = [
         ['arquivo' => 'dashboard.php', 'rotulo' => 'Dashboard', 'icone' => 'home', 'perfis' => ['colaborador', 'gestor', 'administrador']],
+        ['arquivo' => 'dashboard.php#mentoria', 'rotulo' => 'MentorIA', 'icone' => 'chat', 'perfis' => ['colaborador', 'gestor', 'administrador']],
         ['arquivo' => 'equipe.php', 'rotulo' => 'Minha equipe', 'icone' => 'equipe', 'perfis' => ['gestor']],
         ['arquivo' => 'admin.php', 'rotulo' => 'Administração', 'icone' => 'ajustes', 'perfis' => ['administrador']],
         ['arquivo' => 'relatorios.php', 'rotulo' => 'Relatórios', 'icone' => 'download', 'perfis' => ['administrador']],

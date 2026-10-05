@@ -28,6 +28,7 @@ O repositório tem duas aplicações na mesma planilha. Elas não leem os dados 
 8. [Deploy](#deploy)
 9. [Status da implementação e próximos passos](#status-da-implementação-e-próximos-passos)
 10. [TalentFlow PDI](#talentflow-pdi)
+11. [Testes em produção](docs/testes-producao.md)
 
 ---
 
@@ -111,7 +112,7 @@ Acesse `http://localhost:8000`. Com `APP_ENV=local` e `DATA_SOURCE=mock`, a pág
 | Colaborador | `colaborador@empresa.example` | `Senha@123` |
 | Colaborador (inativo) | `colaborador5@empresa.example` | `Senha@123` |
 
-> ⚠️ Essas credenciais existem **somente** na base mock local. Nunca use `APP_ENV=local` em produção.
+> ⚠️ Essas contas de demonstração também estão na planilha usada pelo site publicado. Em produção a tela de login não mostra essa dica. Nunca use `APP_ENV=local` em produção.
 
 A base mock é criada em `storage/mock_db.json` no primeiro acesso, com datas relativas ao dia atual. Para restaurá-la, apague esse arquivo.
 
@@ -375,6 +376,8 @@ Na Vercel, defina estas variáveis antes de usar a planilha. Sem elas o PHP não
 
 O zip de publicação não inclui `.env` nem `credentials/service-account.json`. Essas credenciais ficam só nas variáveis da Vercel.
 
+O teste manual do site publicado está em [docs/testes-producao.md](docs/testes-producao.md).
+
 ---
 
 ## Status da implementação e próximos passos
@@ -384,7 +387,7 @@ O zip de publicação não inclui `.env` nem `credentials/service-account.json`.
 - Estrutura de pastas, `composer.json`, `.env.example`, `.gitignore`, `.htaccess`, `router.php`, `vercel.json`
 - `includes/` completo (config, auth, permissions, csrf, functions, header, footer)
 - Serviços: `GoogleSheetsService` (Sheets + mock), `N8NWebhookService`, `RiskService`, `AuditService`
-- Telas: página inicial, login, dashboards de Colaborador, Gestor e Administrador RH (com filtros), atualização de PDI, Check-in de Experiência, perfil do colaborador, `equipe.php`, `admin.php` e `relatorios.php`
+- Telas: página inicial, login, dashboards de Colaborador, Gestor e Administrador RH (com filtros), atualização de PDI, Check-in de Experiência, perfil do colaborador, `equipe.php`, `admin.php`, `relatorios.php` e MentorIA em `dashboard.php#mentoria`
 - Administração do RH: usuários, vínculo de gestores, projetos e participações, PDIs, regras de risco, logs, webhook n8n, modelos de e-mail e bem-estar individual com registro de acesso
 - Ações: login, salvar PDI, salvar check-in, validar meta, comentário do gestor, administração e exportação CSV (com validação, auditoria e webhook)
 - Fluxo n8n **PDI Connect — avisos** em `/webhook/pdi-connect`, com validação de `X-App-Secret` e envio pelo Gmail
@@ -394,7 +397,6 @@ O zip de publicação não inclui `.env` nem `credentials/service-account.json`.
 
 - `api/colaborador.php`, `api/projetos.php`, `api/pdis.php`, `api/indicadores.php`
 - Crons no n8n para `resumo_semanal_gestor` e `resumo_mensal_rh`
-- Variáveis de ambiente da Vercel (o site publicado só usa a planilha depois que elas forem preenchidas)
 
 Os itens de menu ainda sem arquivo aparecem como “em breve” e são habilitados automaticamente quando os arquivos forem criados.
 
@@ -510,4 +512,4 @@ Falha de Gmail ou da gravação não derruba o fluxo inteiro: o nó segue e, se 
 - Senha, CSRF e limite de tentativas de login (isso existe no PDI Connect, não aqui).
 - As nove abas e o webhook `/webhook/pdi-connect` do PDI Connect.
 - Resumos semanal e mensal por cron.
-- A publicação na Vercel só passa a valer depois do upload e das variáveis de ambiente. O TalentFlow em si fala direto com o n8n; o PHP da mesma hospedagem é que depende da conta de serviço.
+- O site publicado em https://talentflow-weld.vercel.app foi testado em 5 de outubro de 2026. O roteiro e o resultado estão em [docs/testes-producao.md](docs/testes-producao.md). O TalentFlow fala direto com o n8n; o PHP da mesma hospedagem usa a conta de serviço pelas variáveis da Vercel.

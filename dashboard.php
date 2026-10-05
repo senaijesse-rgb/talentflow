@@ -20,4 +20,5 @@ match ($usuario['perfil']) {
     default => require __DIR__ . '/includes/views/dashboard_colaborador.php',
 };
 
+require __DIR__ . '/includes/views/mentoria_painel.php';
 require __DIR__ . '/includes/footer.php';

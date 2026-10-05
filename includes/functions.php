@@ -226,7 +226,9 @@ function formatarNumero(?float $valor, int $casas = 1): string
 
 function paginaDisponivel(string $arquivo): bool
 {
-    return is_file(ROOT_PATH . '/' . ltrim(explode('?', $arquivo)[0], '/'));
+    $caminho = explode('#', explode('?', $arquivo)[0])[0];
+
+    return is_file(ROOT_PATH . '/' . ltrim($caminho, '/'));
 }
 
 /* ---------------------------------------------------------------
