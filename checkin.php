@@ -8,7 +8,7 @@ $usuario = exigirLogin();
 $colaborador = buscarUsuario($usuario['email']);
 $projetos = projetosParaFormulario($usuario['email']);
 $ultimoCheckin = checkinsDoColaborador($usuario['email'])[0] ?? null;
-$tituloPagina = 'Check-in de Experiência';
+$tituloPagina = 'Bem-estar e clima';
 
 $escalas = [
     [
@@ -39,8 +39,8 @@ require __DIR__ . '/includes/header.php';
 <div class="mx-auto max-w-3xl">
     <div class="mb-6">
         <a href="<?= e(url('dashboard.php')) ?>" class="text-sm font-medium text-blue-700 hover:text-blue-800">← Voltar ao dashboard</a>
-        <h2 class="mt-2 text-2xl font-semibold text-marinho-900">Check-in de Experiência do Colaborador</h2>
-        <p class="text-sm text-slate-500">Conte como está sua experiência na empresa. Leva menos de 2 minutos.</p>
+        <h2 class="mt-2 text-2xl font-semibold text-marinho-900">Bem-estar e clima</h2>
+        <p class="text-sm text-slate-500">Check-in voluntário da sua experiência. Leva menos de 2 minutos. A nota individual de bem-estar fica restrita ao RH.</p>
         <?php if ($ultimoCheckin): ?>
             <p class="mt-2 text-xs text-slate-500">Seu último check-in foi enviado em <?= e(formatarData($ultimoCheckin['data_checkin'])) ?>.</p>
         <?php endif; ?>

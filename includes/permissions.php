@@ -129,12 +129,15 @@ function itensMenu(string $perfil): array
 {
     $itens = [
         ['arquivo' => 'dashboard.php', 'rotulo' => 'Dashboard', 'icone' => 'home', 'perfis' => ['colaborador', 'gestor', 'administrador']],
+        ['arquivo' => 'metas.php', 'rotulo' => 'Minhas metas', 'icone' => 'prancheta', 'perfis' => ['colaborador', 'gestor', 'administrador']],
+        ['arquivo' => 'reconhecimento.php', 'rotulo' => 'Reconhecimento', 'icone' => 'bandeira', 'perfis' => ['colaborador', 'gestor', 'administrador']],
         ['arquivo' => 'dashboard.php#mentoria', 'rotulo' => 'MentorIA', 'icone' => 'chat', 'perfis' => ['colaborador', 'gestor', 'administrador']],
+        ['arquivo' => 'checkin.php', 'rotulo' => 'Bem-estar e clima', 'icone' => 'sorriso', 'perfis' => ['colaborador', 'gestor', 'administrador']],
+        ['arquivo' => 'skills.php', 'rotulo' => 'Minhas skills', 'icone' => 'check', 'perfis' => ['colaborador', 'gestor', 'administrador']],
+        ['arquivo' => 'meus_projetos.php', 'rotulo' => 'Meus projetos', 'icone' => 'pasta', 'perfis' => ['colaborador', 'gestor', 'administrador']],
         ['arquivo' => 'equipe.php', 'rotulo' => 'Minha equipe', 'icone' => 'equipe', 'perfis' => ['gestor']],
         ['arquivo' => 'admin.php', 'rotulo' => 'Administração', 'icone' => 'ajustes', 'perfis' => ['administrador']],
         ['arquivo' => 'relatorios.php', 'rotulo' => 'Relatórios', 'icone' => 'download', 'perfis' => ['administrador']],
-        ['arquivo' => 'pdi.php', 'rotulo' => $perfil === 'colaborador' ? 'Atualizar meu PDI' : 'Meu PDI', 'icone' => 'prancheta', 'perfis' => ['colaborador', 'gestor']],
-        ['arquivo' => 'checkin.php', 'rotulo' => 'Check-in de experiência', 'icone' => 'sorriso', 'perfis' => ['colaborador', 'gestor', 'administrador']],
         ['arquivo' => 'perfil.php', 'rotulo' => 'Meu perfil', 'icone' => 'usuario', 'perfis' => ['colaborador', 'gestor', 'administrador']],
     ];
 

@@ -8,7 +8,10 @@ exigirPost();
 $usuario = exigirLogin();
 
 $email = normalizarEmail((string) ($_POST['email'] ?? ''));
-$voltar = 'perfil.php?email=' . rawurlencode($email) . '#comentarios';
+$destino = (string) ($_POST['destino'] ?? '');
+$voltar = $destino === 'reconhecimento.php'
+    ? 'reconhecimento.php'
+    : 'perfil.php?email=' . rawurlencode($email) . '#comentarios';
 
 exigirCsrf($voltar);
 exigirAcessoColaborador($email);
@@ -18,7 +21,7 @@ if (!podeGerenciarMetasDe($email)) {
 }
 
 $comentario = textoLimpo($_POST['comentario'] ?? '', 1000);
-$tipo = (string) ($_POST['tipo_comentario'] ?? '');
+$tipo = $destino === 'reconhecimento.php' ? 'Reconhecimento' : (string) ($_POST['tipo_comentario'] ?? '');
 $tipos = ['Feedback', 'Acompanhamento', 'Reconhecimento'];
 $visivel = (($_POST['visivel_colaborador'] ?? '') === 'sim') ? 'sim' : 'nao';
 

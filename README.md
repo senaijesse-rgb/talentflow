@@ -387,7 +387,7 @@ O teste manual do site publicado está em [docs/testes-producao.md](docs/testes-
 - Estrutura de pastas, `composer.json`, `.env.example`, `.gitignore`, `.htaccess`, `router.php`, `vercel.json`
 - `includes/` completo (config, auth, permissions, csrf, functions, header, footer)
 - Serviços: `GoogleSheetsService` (Sheets + mock), `N8NWebhookService`, `RiskService`, `AuditService`
-- Telas: página inicial, login, dashboards de Colaborador, Gestor e Administrador RH (com filtros), atualização de PDI, Check-in de Experiência, perfil do colaborador, `equipe.php`, `admin.php`, `relatorios.php` e MentorIA em `dashboard.php#mentoria`
+- Telas: página inicial, login, dashboards de Colaborador, Gestor e Administrador RH (com filtros), Minhas metas, Reconhecimento, MentorIA, Bem-estar e clima, Minhas skills, Meus projetos, perfil, `equipe.php`, `admin.php` e `relatorios.php`
 - Administração do RH: usuários, vínculo de gestores, projetos e participações, PDIs, regras de risco, logs, webhook n8n, modelos de e-mail e bem-estar individual com registro de acesso
 - Ações: login, salvar PDI, salvar check-in, validar meta, comentário do gestor, administração e exportação CSV (com validação, auditoria e webhook)
 - Fluxo n8n **PDI Connect — avisos** em `/webhook/pdi-connect`, com validação de `X-App-Secret` e envio pelo Gmail
