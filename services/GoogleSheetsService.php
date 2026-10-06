@@ -174,6 +174,46 @@ final class GoogleSheetsService
         $this->cache = [];
     }
 
+    /**
+     * Lê um intervalo das abas do TalentFlow. Essas abas ficam fora do esquema do PDI Connect.
+     *
+     * @return list<list<string>>
+     */
+    public function lerIntervaloTalentFlow(string $aba, string $celulas): array
+    {
+        $this->exigirAbaTalentFlow($aba);
+        if ($this->modo !== 'sheets') {
+            return [];
+        }
+
+        $resposta = $this->executarGoogle(fn () => $this->sheets->spreadsheets_values->get(
+            $this->planilhaId,
+            $this->intervalo($aba, $celulas)
+        ));
+
+        return array_map(
+            static fn ($linha) => array_map(static fn ($celula) => trim((string) $celula), $linha),
+            $resposta->getValues() ?? []
+        );
+    }
+
+    /** Acrescenta linhas nas abas do TalentFlow, sem reescrever o que já existe. */
+    public function anexarLinhasTalentFlow(string $aba, array $linhas): void
+    {
+        $this->exigirAbaTalentFlow($aba);
+        if ($linhas === [] || $this->modo !== 'sheets') {
+            return;
+        }
+
+        $corpo = new \Google\Service\Sheets\ValueRange(['values' => $linhas]);
+        $this->executarGoogle(fn () => $this->sheets->spreadsheets_values->append(
+            $this->planilhaId,
+            $this->intervalo($aba, 'A1'),
+            $corpo,
+            ['valueInputOption' => 'RAW', 'insertDataOption' => 'INSERT_ROWS']
+        ));
+    }
+
     /* ---------------------------------------------------------- */
 
     private function conectarGoogle(): void
@@ -336,6 +376,13 @@ final class GoogleSheetsService
     private function intervalo(string $aba, string $celulas): string
     {
         return "'" . str_replace("'", "''", $aba) . "'!" . $celulas;
+    }
+
+    private function exigirAbaTalentFlow(string $aba): void
+    {
+        if (!in_array($aba, ['TF_Registros', 'TF_Usuarios'], true)) {
+            throw new InvalidArgumentException('Aba fora do vínculo com o TalentFlow.');
+        }
     }
 
     private function validarAba(string $aba): void

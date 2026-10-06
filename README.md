@@ -411,7 +411,7 @@ Os itens de menu ainda sem arquivo aparecem como “em breve” e são habilitad
 
 Página estática em `talentflow/index.html`. O navegador não chama a API do Google. Toda leitura e gravação passa pelo webhook do n8n, que lê e grava a planilha e envia os e-mails pelo Gmail.
 
-Local: `http://localhost:8000/talentflow/`. Na Vercel: `/talentflow/`.
+Local: `http://localhost:8000/talentflow/`. Na Vercel: `/talentflow/`. Quem já entrou no PDI Connect abre o mesmo fluxo pelo menu **TalentFlow**: a sessão do n8n usa o e-mail dessa pessoa, e os usuários ativos do PDI Connect passam a existir na base do TalentFlow sem apagar os registros que já estavam lá.
 
 `APP_CONFIG.mode` está em `production`. A base é `https://senaipdi.app.n8n.cloud` e o único endereço usado é `POST /webhook/talentflow`. O modo `demo` continua no arquivo e responde no navegador, sem planilha.
 

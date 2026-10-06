@@ -129,6 +129,7 @@ function itensMenu(string $perfil): array
 {
     $itens = [
         ['arquivo' => 'dashboard.php', 'rotulo' => 'Dashboard', 'icone' => 'home', 'perfis' => ['colaborador', 'gestor', 'administrador']],
+        ['arquivo' => 'talentflow.php', 'rotulo' => 'TalentFlow', 'icone' => 'tendencia', 'perfis' => ['colaborador', 'gestor', 'administrador']],
         ['arquivo' => 'metas.php', 'rotulo' => 'Minhas metas', 'icone' => 'prancheta', 'perfis' => ['colaborador', 'gestor', 'administrador']],
         ['arquivo' => 'reconhecimento.php', 'rotulo' => 'Reconhecimento', 'icone' => 'bandeira', 'perfis' => ['colaborador', 'gestor', 'administrador']],
         ['arquivo' => 'dashboard.php#mentoria', 'rotulo' => 'MentorIA', 'icone' => 'chat', 'perfis' => ['colaborador', 'gestor', 'administrador']],

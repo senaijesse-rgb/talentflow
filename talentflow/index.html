@@ -180,6 +180,7 @@
           <p class="flex items-center gap-1.5 font-semibold text-slate-200"><i data-lucide="shield" class="w-3.5 h-3.5"></i>Privacidade</p>
           <p class="mt-1">Acesso filtrado por perfil e hierarquia. Dados de bem-estar são restritos e exibidos de forma agregada.</p>
         </div>
+        <a id="voltar-pdi" href="../dashboard.php" hidden class="nav-link w-full"><i data-lucide="arrow-left" class="w-5 h-5"></i>Voltar ao PDI Connect</a>
         <button type="button" data-action="logout" class="nav-link w-full"><i data-lucide="log-out" class="w-5 h-5"></i>Sair</button>
       </div>
     </aside>
@@ -1526,6 +1527,10 @@ async function login(email, silent = false) {
 }
 
 function logout(expired = false) {
+  if (new URLSearchParams(location.search).get("origem") === "pdi") {
+    location.href = new URL("../dashboard.php", location.href).href;
+    return;
+  }
   destroyCharts();
   closeModal(true);
   STATE.user = null; STATE.token = null; STATE.data = null; STATE.filters = {}; STATE.editMetaId = null; STATE.lastMentor = null; STATE.matrizSel = null; STATE.reportRows = null;
@@ -2915,6 +2920,40 @@ document.addEventListener("keydown", e => {
 window.addEventListener("hashchange", () => { if (STATE.user && STATE.data) route(); });
 window.addEventListener("resize", () => { if (window.innerWidth >= 1024) { $("#sidebar-overlay").hidden = true; } });
 
+async function entrarPeloPdi() {
+  setLoading(true);
+  try {
+    const resposta = await fetch(new URL("../actions/talentflow_entrar.php", location.href), {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { Accept: "application/json" }
+    });
+    const data = await resposta.json().catch(() => ({}));
+    if (!resposta.ok || !data.token || !data.user) {
+      throw new Error(data.erro || "Não foi possível abrir o TalentFlow.");
+    }
+    STATE.user = data.user;
+    STATE.token = data.token;
+    sessionStorage.setItem("tf_session_email", data.user.email);
+    $("#login-screen").hidden = true;
+    $("#app").hidden = false;
+    $("#voltar-pdi").hidden = false;
+    $("#main section[data-view=dashboard]").hidden = false;
+    $("#main section[data-view=dashboard]").innerHTML = skeletonHTML();
+    await reloadData();
+    paintHeader();
+    buildMenu();
+    if (!location.hash || location.hash === "#") history.replaceState(null, "", location.pathname + location.search + "#/dashboard");
+    route();
+    toast(`Bem-vindo(a), ${firstName(STATE.user.nome)}!`);
+  } catch (e) {
+    $("#login-screen").hidden = false;
+    $("#login-error").textContent = e.message || "Não foi possível abrir o TalentFlow.";
+  } finally {
+    setLoading(false);
+  }
+}
+
 function init() {
   if (window.Chart) {
     window.Chart.defaults.font.family = "Inter, system-ui, sans-serif";
@@ -2922,6 +2961,10 @@ function init() {
     window.Chart.defaults.borderColor = "#E2E8F0";
   }
   refreshIcons();
+  if (new URLSearchParams(location.search).get("origem") === "pdi") {
+    entrarPeloPdi();
+    return;
+  }
   // Restaura a sessão da aba (somente o e-mail; o token é emitido de novo e os dados vêm da planilha)
   const saved = sessionStorage.getItem("tf_session_email");
   if (saved) login(saved, true);
