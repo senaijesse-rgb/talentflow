@@ -214,6 +214,23 @@ final class GoogleSheetsService
         ));
     }
 
+    /** Grava um intervalo já existente nas abas do TalentFlow. */
+    public function gravarIntervaloTalentFlow(string $aba, string $celulas, array $linhas): void
+    {
+        $this->exigirAbaTalentFlow($aba);
+        if ($linhas === [] || $this->modo !== 'sheets') {
+            return;
+        }
+
+        $corpo = new \Google\Service\Sheets\ValueRange(['values' => $linhas]);
+        $this->executarGoogle(fn () => $this->sheets->spreadsheets_values->update(
+            $this->planilhaId,
+            $this->intervalo($aba, $celulas),
+            $corpo,
+            ['valueInputOption' => 'RAW']
+        ));
+    }
+
     /* ---------------------------------------------------------- */
 
     private function conectarGoogle(): void

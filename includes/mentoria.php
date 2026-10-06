@@ -27,6 +27,11 @@ function projetoAtualMentoria(string $email): string
     return (string) ($atuais[0]['nome_projeto'] ?? '');
 }
 
+function mentoriaVeioDoN8n(?string $origem): bool
+{
+    return in_array($origem ?? '', ['generativa', 'azure-openai'], true);
+}
+
 /** @return array{mensagem: string, passos: list<string>, reflexao: string, aviso: ?string} */
 function gerarPlanoMentoria(array $pdi, string $dificuldade, string $projeto = ''): array
 {

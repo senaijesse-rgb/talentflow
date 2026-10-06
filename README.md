@@ -413,7 +413,7 @@ Página estática em `talentflow/index.html`. O navegador não chama a API do Go
 
 Local: `http://localhost:8000/talentflow/`. Na Vercel: `/talentflow/`. Quem já entrou no PDI Connect abre o mesmo fluxo pelo menu **TalentFlow**: a sessão do n8n usa o e-mail dessa pessoa, e os usuários ativos do PDI Connect passam a existir na base do TalentFlow sem apagar os registros que já estavam lá.
 
-`APP_CONFIG.mode` está em `production`. A base é `https://senaipdi.app.n8n.cloud` e o único endereço usado é `POST /webhook/talentflow`. O modo `demo` continua no arquivo e responde no navegador, sem planilha.
+`APP_CONFIG.mode` está em `production`. A base é `https://senaipdi.app.n8n.cloud` e o único endereço usado é `POST /webhook/talentflow`. O modo `demo` continua no arquivo e responde no navegador, sem planilha. A MentorIA do painel do PDI Connect chama esse mesmo webhook com `recurso: mentorIA`. O fluxo prepara o contexto da meta e o agente de IA escreve o plano. Se o n8n não responder, o PHP ainda entrega um plano local.
 
 ### Perfis e telas
 
@@ -489,11 +489,11 @@ O colega indicado não vê o valor enquanto o RH não autoriza. O RH cadastra as
 
 Fluxo publicado: **TalentFlow PDI — API**.
 
-Webhook → lê `TF_Motor` → lê as abas em lote → **IA não generativa** → **IA generativa** → motor → grava só as linhas alteradas → responde ao navegador. Em paralelo, os e-mails pendentes seguem para o Gmail.
+Webhook → lê `TF_Motor` → lê as abas em lote → **IA não generativa** → **IA generativa** → agente de IA (só na MentorIA) → motor → grava só as linhas alteradas → responde ao navegador. Em paralelo, os e-mails pendentes seguem para o Gmail.
 
 A IA não generativa só entra quando o colaborador salva satisfação e bem-estar. Ela lê as notas, a carga e o sentimento (lista fechada) e devolve só a classe: Baixo, Médio ou Alto. O comentário livre não entra nesse nó.
 
-A IA generativa só entra na MentorIA. Ela escreve a mensagem, os três passos, a pergunta de reflexão e o aviso, usando o título da meta e a dificuldade. Não recebe bem-estar, comentário de clima nem dados de outras pessoas. Se a dificuldade fala de saúde, o aviso pede ajuda do gestor, do RH ou de um serviço especializado, sem diagnóstico.
+A IA generativa só entra na MentorIA. Ela monta o contexto com o título da meta e a dificuldade, e o agente de IA escreve a mensagem, os três passos, a pergunta de reflexão e o aviso. Não recebe bem-estar, comentário de clima nem dados de outras pessoas. Se a dificuldade fala de saúde, o aviso pede ajuda do gestor, do RH ou de um serviço especializado, sem diagnóstico.
 
 Destinatários `@empresa.com` e `*.example` são entregues em `senaijesse@gmail.com`. Os demais endereços seguem o valor original.
 

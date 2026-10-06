@@ -139,8 +139,123 @@ function garantirUsuariosNoTalentFlow(): void
     db()->anexarLinhasTalentFlow('TF_Usuarios', $projecao);
 }
 
+/**
+ * Pede o plano da MentorIA ao fluxo n8n. A IA generativa só lê a meta espelhada e a dificuldade.
+ *
+ * @return array{mensagem: string, passos: list<string>, reflexao: string, aviso: ?string, origem: string}|null
+ */
+function planoMentoriaPeloN8n(array $usuario, array $pdi, string $dificuldade, string $projeto): ?array
+{
+    if (mb_strlen(trim($dificuldade)) < 10) {
+        return null;
+    }
+
+    try {
+        espelharMetaNoTalentFlow($usuario, $pdi, $projeto);
+    } catch (Throwable $erro) {
+        error_log('[TalentFlow] ' . $erro->getMessage());
+
+        return null;
+    }
+
+    $token = tokenTalentFlow($usuario);
+    if ($token === null) {
+        return null;
+    }
+
+    $resposta = chamarWebhookTalentFlow([
+        'recurso' => 'mentorIA',
+        'metodo' => 'POST',
+        'token' => $token,
+        'metaId' => (string) $pdi['id_pdi'],
+        'dificuldade' => $dificuldade,
+    ], ['Authorization: Bearer ' . $token]);
+
+    return planoMentoriaValido($resposta['json']);
+}
+
+function tokenTalentFlow(array $usuario): ?string
+{
+    $email = normalizarEmail($usuario['email'] ?? '');
+    $guardado = $_SESSION['talentflow_token'] ?? '';
+    $expira = (int) ($_SESSION['talentflow_token_exp'] ?? 0);
+    if (is_string($guardado) && $guardado !== '' && $expira > time() && ($_SESSION['talentflow_token_email'] ?? '') === $email) {
+        return $guardado;
+    }
+
+    $sessao = abrirSessaoTalentFlow($usuario);
+    if (isset($sessao['erro'])) {
+        return null;
+    }
+
+    $_SESSION['talentflow_token'] = $sessao['token'];
+    $_SESSION['talentflow_token_exp'] = time() + (11 * 3600);
+    $_SESSION['talentflow_token_email'] = $email;
+
+    return $sessao['token'];
+}
+
+function espelharMetaNoTalentFlow(array $usuario, array $pdi, string $projeto): void
+{
+    $id = (string) ($pdi['id_pdi'] ?? '');
+    $email = normalizarEmail($usuario['email'] ?? '');
+    if ($id === '' || $email === '') {
+        return;
+    }
+
+    $json = json_encode([
+        'id' => $id,
+        'email' => $email,
+        'titulo' => (string) ($pdi['meta'] ?? ''),
+        'competencia' => (string) ($pdi['competencia'] ?? ''),
+        'status' => (string) ($pdi['status'] ?? 'Em andamento'),
+        'progresso' => (int) ($pdi['percentual_conclusao'] ?? 0),
+        'prazo' => substr((string) ($pdi['prazo'] ?? ''), 0, 10),
+        'inicio' => substr((string) ($pdi['data_inicio'] ?? ''), 0, 10),
+        'projeto' => $projeto,
+        'dificuldade' => '',
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+    $linhas = db()->lerIntervaloTalentFlow('TF_Registros', 'A:B');
+    foreach ($linhas as $indice => $linha) {
+        if (($linha[0] ?? '') === 'metas' && ($linha[1] ?? '') === $id) {
+            db()->gravarIntervaloTalentFlow('TF_Registros', 'C' . ($indice + 1), [[$json]]);
+
+            return;
+        }
+    }
+
+    db()->anexarLinhasTalentFlow('TF_Registros', [['metas', $id, $json]]);
+}
+
+/** @param mixed $json */
+function planoMentoriaValido(mixed $json): ?array
+{
+    if (!is_array($json) || !is_string($json['mensagem'] ?? null) || !is_string($json['reflexao'] ?? null) || !is_array($json['passos'] ?? null) || count($json['passos']) !== 3) {
+        return null;
+    }
+
+    $passos = [];
+    foreach ($json['passos'] as $passo) {
+        if (!is_string($passo) || trim($passo) === '') {
+            return null;
+        }
+        $passos[] = $passo;
+    }
+
+    $aviso = $json['aviso'] ?? null;
+
+    return [
+        'mensagem' => $json['mensagem'],
+        'passos' => $passos,
+        'reflexao' => $json['reflexao'],
+        'aviso' => is_string($aviso) && $aviso !== '' ? $aviso : null,
+        'origem' => (string) ($json['origem'] ?? ''),
+    ];
+}
+
 /** @return array{ok: bool, status: int, json: ?array} */
-function chamarWebhookTalentFlow(array $payload): array
+function chamarWebhookTalentFlow(array $payload, array $cabecalhosExtras = []): array
 {
     $url = urlWebhookTalentFlow();
     if (!function_exists('curl_init')) {
@@ -152,10 +267,10 @@ function chamarWebhookTalentFlow(array $payload): array
     curl_setopt_array($curl, [
         CURLOPT_POST => true,
         CURLOPT_POSTFIELDS => $corpo,
-        CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json'],
+        CURLOPT_HTTPHEADER => array_merge(['Content-Type: application/json', 'Accept: application/json'], $cabecalhosExtras),
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_TIMEOUT => 40,
+        CURLOPT_TIMEOUT => 90,
         CURLOPT_FOLLOWLOCATION => false,
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_SSL_VERIFYHOST => 2,

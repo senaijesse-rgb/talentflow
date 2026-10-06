@@ -9,7 +9,7 @@ $classeCampoMentoria = 'mt-1.5 block w-full rounded-lg border border-slate-300 p
 <section id="mentoria" class="mt-6 scroll-mt-20 rounded-2xl border border-slate-200 bg-white shadow-sm" aria-labelledby="titulo-mentoria">
     <div class="border-b border-slate-100 px-5 py-4">
         <h2 id="titulo-mentoria" class="flex items-center gap-2 font-semibold text-marinho-900"><?= icone('chat', 'h-5 w-5 text-blue-700') ?> MentorIA</h2>
-        <p class="mt-1 text-sm text-slate-500">Orientação prática para destravar uma meta do seu PDI. Não é terapia, diagnóstico médico ou aconselhamento clínico.</p>
+        <p class="mt-1 text-sm text-slate-500">O plano sai do fluxo da MentorIA no n8n, usando só o título da meta e a dificuldade que você descreve. Não é terapia, diagnóstico médico ou aconselhamento clínico.</p>
     </div>
     <div class="grid gap-6 p-5 xl:grid-cols-5">
         <div class="space-y-4 xl:col-span-3">
@@ -28,7 +28,7 @@ $classeCampoMentoria = 'mt-1.5 block w-full rounded-lg border border-slate-300 p
                         </select>
                     </label>
                     <label class="block text-sm font-medium text-slate-700" for="mentoria-dificuldade">Descreva sua dificuldade
-                        <textarea id="mentoria-dificuldade" name="dificuldade" required minlength="8" maxlength="1000" rows="3" class="<?= $classeCampoMentoria ?>" placeholder="Ex.: não estou conseguindo tempo para estudar por causa das entregas do projeto."></textarea>
+                        <textarea id="mentoria-dificuldade" name="dificuldade" required minlength="10" maxlength="1000" rows="3" class="<?= $classeCampoMentoria ?>" placeholder="Ex.: não estou conseguindo tempo para estudar por causa das entregas do projeto."></textarea>
                     </label>
                     <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800">Gerar plano de ação</button>
                 </form>
@@ -56,6 +56,9 @@ $classeCampoMentoria = 'mt-1.5 block w-full rounded-lg border border-slate-300 p
                             <p class="mt-3 rounded-lg border border-slate-100 bg-white p-3 text-sm"><b>Pergunta de reflexão:</b> <?= e($item['reflexao']) ?></p>
                             <?php if (!empty($item['aviso'])): ?>
                                 <p class="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950"><?= e($item['aviso']) ?></p>
+                            <?php endif; ?>
+                            <?php if (mentoriaVeioDoN8n($item['origem'] ?? '')): ?>
+                                <p class="mt-3 text-[11px] text-slate-500">Plano escrito pela IA generativa do n8n, só com a meta e a dificuldade informadas.</p>
                             <?php endif; ?>
                             <p class="mt-3 text-[11px] text-slate-500">A MentorIA oferece orientação de desenvolvimento profissional. Não realiza terapia, diagnóstico médico ou aconselhamento clínico.</p>
                         </li>
