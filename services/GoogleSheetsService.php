@@ -24,6 +24,9 @@ final class GoogleSheetsService
         'Regras' => ['chave', 'valor', 'descricao', 'ativo', 'atualizado_em', 'atualizado_por'],
         'Logs_Auditoria' => ['id_log', 'data_hora', 'email_usuario', 'perfil_usuario', 'acao', 'entidade', 'id_entidade', 'descricao', 'ip', 'resultado'],
         'Comentarios_Gestor' => ['id_comentario', 'email_colaborador', 'gestor_email', 'comentario', 'tipo_comentario', 'data_comentario', 'visivel_colaborador'],
+        'Skills_Colaborador' => ['id_skill', 'email_colaborador', 'nome', 'nivel', 'evidencia', 'data_registro'],
+        'Vagas_Internas' => ['id_vaga', 'titulo', 'area', 'descricao', 'requisitos', 'status', 'publicado_por', 'data_publicacao'],
+        'Candidaturas_Vaga' => ['id_candidatura', 'id_vaga', 'email_colaborador', 'mensagem', 'data_candidatura'],
     ];
 
     private static ?self $instancia = null;
@@ -35,6 +38,9 @@ final class GoogleSheetsService
 
     /** @var array<string, list<array<string, string|int>>> */
     private array $cache = [];
+
+    /** @var array<string, true>|null */
+    private ?array $abasExistentes = null;
 
     public static function instancia(): self
     {
@@ -220,6 +226,7 @@ final class GoogleSheetsService
     private function ler(string $aba): array
     {
         $this->validarAba($aba);
+        $this->garantirAba($aba);
 
         if (isset($this->cache[$aba])) {
             return $this->cache[$aba];
@@ -282,6 +289,48 @@ final class GoogleSheetsService
     private function normalizar(string $coluna, string $valor): string
     {
         return str_contains($coluna, 'email') ? normalizarEmail($valor) : trim($valor);
+    }
+
+    /** Cria a aba e a linha de cabeçalho quando ainda não existem na planilha. */
+    private function garantirAba(string $aba): void
+    {
+        if ($this->modo !== 'sheets' || isset($this->abasExistentes[$aba])) {
+            return;
+        }
+
+        if ($this->abasExistentes === null) {
+            $meta = $this->executarGoogle(fn () => $this->sheets->spreadsheets->get(
+                $this->planilhaId,
+                ['fields' => 'sheets.properties.title']
+            ));
+            $this->abasExistentes = [];
+            foreach ($meta->getSheets() as $folha) {
+                $titulo = (string) $folha->getProperties()->getTitle();
+                if ($titulo !== '') {
+                    $this->abasExistentes[$titulo] = true;
+                }
+            }
+        }
+
+        if (isset($this->abasExistentes[$aba])) {
+            return;
+        }
+
+        $pedido = new \Google\Service\Sheets\BatchUpdateSpreadsheetRequest([
+            'requests' => [[
+                'addSheet' => ['properties' => ['title' => $aba]],
+            ]],
+        ]);
+        $this->executarGoogle(fn () => $this->sheets->spreadsheets->batchUpdate($this->planilhaId, $pedido));
+
+        $cabecalho = new \Google\Service\Sheets\ValueRange(['values' => [self::SCHEMA[$aba]]]);
+        $this->executarGoogle(fn () => $this->sheets->spreadsheets_values->update(
+            $this->planilhaId,
+            $this->intervalo($aba, 'A1'),
+            $cabecalho,
+            ['valueInputOption' => 'RAW']
+        ));
+        $this->abasExistentes[$aba] = true;
     }
 
     private function intervalo(string $aba, string $celulas): string

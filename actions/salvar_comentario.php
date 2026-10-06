@@ -9,15 +9,23 @@ $usuario = exigirLogin();
 
 $email = normalizarEmail((string) ($_POST['email'] ?? ''));
 $destino = (string) ($_POST['destino'] ?? '');
-$voltar = $destino === 'reconhecimento.php'
+$reconhecimentoColega = $destino === 'reconhecimento.php';
+$voltar = $reconhecimentoColega
     ? 'reconhecimento.php'
     : 'perfil.php?email=' . rawurlencode($email) . '#comentarios';
 
 exigirCsrf($voltar);
-exigirAcessoColaborador($email);
 
-if (!podeGerenciarMetasDe($email)) {
-    negarAcesso('Tentativa de comentar sem ser gestor responsável ou RH.', 'Comentarios_Gestor', $email);
+if ($reconhecimentoColega) {
+    if ($email === '' || $email === $usuario['email']) {
+        flash('erro', 'Escolha um colega da companhia para reconhecer.');
+        redirect($voltar);
+    }
+} else {
+    exigirAcessoColaborador($email);
+    if (!podeGerenciarMetasDe($email)) {
+        negarAcesso('Tentativa de comentar sem ser gestor responsável ou RH.', 'Comentarios_Gestor', $email);
+    }
 }
 
 $comentario = textoLimpo($_POST['comentario'] ?? '', 1000);

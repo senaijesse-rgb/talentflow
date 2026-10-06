@@ -134,6 +134,46 @@
         });
     });
 
+    /* Busca de colegas para reconhecimento */
+    qsa('[data-busca-colegas]').forEach((bloco) => {
+        const bruto = qs('[data-colegas]', bloco)?.textContent || '[]';
+        let colegas = [];
+        try { colegas = JSON.parse(bruto); } catch (erro) { colegas = []; }
+        const busca = qs('[data-busca-colega]', bloco);
+        const lista = qs('[data-resultados-colegas]', bloco);
+        const email = qs('[data-email-colega]', bloco);
+        if (!busca || !lista || !email) return;
+
+        const semAcento = (texto) => texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        const desenhar = () => {
+            const termo = semAcento(busca.value.trim());
+            lista.replaceChildren();
+            if (termo.length < 2) return;
+            colegas.filter((pessoa) => semAcento([pessoa.nome, pessoa.cargo, pessoa.area, pessoa.email].join(' ')).includes(termo))
+                .slice(0, 8)
+                .forEach((pessoa) => {
+                    const item = document.createElement('li');
+                    const botao = document.createElement('button');
+                    botao.type = 'button';
+                    botao.className = 'block w-full px-3 py-2 text-left text-sm hover:bg-slate-50';
+                    botao.innerHTML = '<span class="font-medium text-slate-900"></span><span class="block text-xs text-slate-500"></span>';
+                    botao.querySelector('span').textContent = pessoa.nome;
+                    botao.querySelector('span + span').textContent = [pessoa.cargo, pessoa.area].filter(Boolean).join(' · ');
+                    botao.addEventListener('click', () => {
+                        email.value = pessoa.email;
+                        busca.value = pessoa.nome;
+                        lista.replaceChildren();
+                    });
+                    item.appendChild(botao);
+                    lista.appendChild(item);
+                });
+        };
+        busca.addEventListener('input', () => {
+            if (email.value && busca.value !== '') email.value = '';
+            desenhar();
+        });
+    });
+
     /* Foco inicial solicitado pela URL (ex.: ?foco=dificuldade) */
     const foco = qs('[data-foco-inicial]');
     if (foco) {

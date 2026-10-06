@@ -7,11 +7,11 @@ Aplicação web responsiva para **gestão de pessoas, projetos e desenvolvimento
 - **Banco de dados:** Google Sheets (Google Sheets API) — com modo *mock* local para desenvolvimento
 - **Automação:** Webhooks para n8n (e-mails via Gmail são enviados pelos fluxos do n8n)
 
-O repositório tem duas aplicações na mesma planilha. Elas não leem os dados uma da outra. O PHP ignora abas fora do esquema das nove abas abaixo.
+O repositório tem duas aplicações na mesma planilha. Elas não leem os dados uma da outra. O PHP ignora abas fora do esquema abaixo. As três últimas são criadas automaticamente na primeira vez em que alguém usa skills ou vagas.
 
 | Aplicação | Endereço | Quem grava |
 |---|---|---|
-| **PDI Connect** | `/` | PHP, nas nove abas deste documento |
+| **PDI Connect** | `/` | PHP, nas abas deste documento |
 | **TalentFlow PDI** | `/talentflow/` | n8n, nas abas `TalentFlow_*` e `TF_*` |
 
 ---
@@ -144,6 +144,9 @@ A base mock é criada em `storage/mock_db.json` no primeiro acesso, com datas re
 | `Regras` | chave, valor, descricao, ativo, atualizado_em, atualizado_por |
 | `Logs_Auditoria` | id_log, data_hora, email_usuario, perfil_usuario, acao, entidade, id_entidade, descricao, ip, resultado |
 | `Comentarios_Gestor` | id_comentario, email_colaborador, gestor_email, comentario, tipo_comentario, data_comentario, visivel_colaborador |
+| `Skills_Colaborador` | id_skill, email_colaborador, nome, nivel, evidencia, data_registro |
+| `Vagas_Internas` | id_vaga, titulo, area, descricao, requisitos, status, publicado_por, data_publicacao |
+| `Candidaturas_Vaga` | id_candidatura, id_vaga, email_colaborador, mensagem, data_candidatura |
 
 Convenções de valores:
 
@@ -151,6 +154,8 @@ Convenções de valores:
 - `ativo`, `visivel_colaborador`, `consentimento_confirmado`: `sim` / `nao`
 - `status` (PDIs): `Em andamento`, `Atenção`, `Atrasado`, `Aguardando validação`, `Concluído`
 - `status` (Projetos) e `status_participacao`: `ativo` / `concluido` / `encerrado`
+- `nivel` (skills): `Básico`, `Intermediário` ou `Avançado`
+- `status` (vagas): `Aberta` ou `Encerrada`
 - Datas: `AAAA-MM-DD`; data/hora: ISO 8601 (gravadas automaticamente pelo sistema)
 - Recomenda-se formatar as colunas de data e percentual como **Texto simples** para evitar conversões automáticas.
 
@@ -387,11 +392,11 @@ O teste manual do site publicado está em [docs/testes-producao.md](docs/testes-
 - Estrutura de pastas, `composer.json`, `.env.example`, `.gitignore`, `.htaccess`, `router.php`, `vercel.json`
 - `includes/` completo (config, auth, permissions, csrf, functions, header, footer)
 - Serviços: `GoogleSheetsService` (Sheets + mock), `N8NWebhookService`, `RiskService`, `AuditService`
-- Telas: página inicial, login, dashboards de Colaborador, Gestor e Administrador RH (com filtros), Minhas metas, Reconhecimento, MentorIA, Bem-estar e clima, Minhas skills, Meus projetos, perfil, `equipe.php`, `admin.php` e `relatorios.php`
+- Telas: página inicial, login, dashboards de Colaborador, Gestor e Administrador RH (com filtros), Minhas metas (o colaborador cria a própria), Reconhecimento entre colegas com busca, MentorIA, Bem-estar e clima, Minhas skills, Meus projetos, Vagas internas, perfil, `equipe.php`, `admin.php` e `relatorios.php`
 - Administração do RH: usuários, vínculo de gestores, projetos e participações, PDIs, regras de risco, logs, webhook n8n, modelos de e-mail e bem-estar individual com registro de acesso
 - Ações: login, salvar PDI, salvar check-in, validar meta, comentário do gestor, administração e exportação CSV (com validação, auditoria e webhook)
 - Fluxo n8n **PDI Connect — avisos** em `/webhook/pdi-connect`, com validação de `X-App-Secret` e envio pelo Gmail
-- Planilha com as nove abas deste documento, conta de serviço como editor e `DATA_SOURCE=sheets` no ambiente local
+- Planilha com as abas deste documento, conta de serviço como editor e `DATA_SOURCE=sheets` no ambiente local
 
 **Ainda não feito**
 
@@ -510,6 +515,6 @@ Falha de Gmail ou da gravação não derruba o fluxo inteiro: o nó segue e, se 
 ### O que o TalentFlow ainda não cobre
 
 - Senha, CSRF e limite de tentativas de login (isso existe no PDI Connect, não aqui).
-- As nove abas e o webhook `/webhook/pdi-connect` do PDI Connect.
+- As abas do PDI Connect e o webhook `/webhook/pdi-connect`.
 - Resumos semanal e mensal por cron.
 - O site publicado em https://talentflow-weld.vercel.app foi testado em 5 de outubro de 2026. O roteiro e o resultado estão em [docs/testes-producao.md](docs/testes-producao.md). O TalentFlow fala direto com o n8n; o PHP da mesma hospedagem usa a conta de serviço pelas variáveis da Vercel.

@@ -135,6 +135,7 @@ function itensMenu(string $perfil): array
         ['arquivo' => 'checkin.php', 'rotulo' => 'Bem-estar e clima', 'icone' => 'sorriso', 'perfis' => ['colaborador', 'gestor', 'administrador']],
         ['arquivo' => 'skills.php', 'rotulo' => 'Minhas skills', 'icone' => 'check', 'perfis' => ['colaborador', 'gestor', 'administrador']],
         ['arquivo' => 'meus_projetos.php', 'rotulo' => 'Meus projetos', 'icone' => 'pasta', 'perfis' => ['colaborador', 'gestor', 'administrador']],
+        ['arquivo' => 'vagas.php', 'rotulo' => 'Vagas internas', 'icone' => 'maleta', 'perfis' => ['colaborador', 'gestor', 'administrador']],
         ['arquivo' => 'equipe.php', 'rotulo' => 'Minha equipe', 'icone' => 'equipe', 'perfis' => ['gestor']],
         ['arquivo' => 'admin.php', 'rotulo' => 'Administração', 'icone' => 'ajustes', 'perfis' => ['administrador']],
         ['arquivo' => 'relatorios.php', 'rotulo' => 'Relatórios', 'icone' => 'download', 'perfis' => ['administrador']],
